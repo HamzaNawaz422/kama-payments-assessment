@@ -11,6 +11,8 @@ using Microsoft.Extensions.Http.Resilience;
 using Payments.Infrastructure.ExternalServices;
 using Polly;
 using Payments.Infrastructure.BackgroundJobs;
+using Microsoft.AspNetCore.Identity;
+using Payments.Infrastructure.Identity;
 
 namespace Payments.Infrastructure;
 
@@ -52,6 +54,13 @@ public static class DependencyInjection
         services.AddSingleton<IPaymentQueue, ChannelPaymentQueue>();
         services.AddHostedService<PaymentProcessingWorker>();
         services.AddHostedService<FailedPaymentRetryWorker>();
+
+        var jwtOptions = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
+    ?? throw new InvalidOperationException("Jwt configuration is missing.");
+        services.AddSingleton(jwtOptions);
+
+        services.AddScoped<IPasswordHasher<AppUser>, PasswordHasher<AppUser>>();
+        services.AddScoped<IAuthService, AuthService>();
 
         return services;
     }
