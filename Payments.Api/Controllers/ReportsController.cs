@@ -12,14 +12,19 @@ namespace Payments.Api.Controllers;
 [Produces("application/json")]
 public sealed class ReportsController : ControllerBase
 {
-    /// <summary>Admin only: daily payment count and total per provider and status (SQL Server stored procedure).</summary>
+    private readonly GetDailyReportHandler _getDailyReportHandler;
+
+    public ReportsController(GetDailyReportHandler _getDailyReportHandler)
+    {
+        this._getDailyReportHandler = _getDailyReportHandler;
+    }
+
     [HttpGet("daily-payments")]
     [ProducesResponseType<IReadOnlyList<DailyPaymentReportRow>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DailyPayments(
-        [FromQuery] DateOnly? from, [FromQuery] DateOnly? to,
-        [FromServices] GetDailyReportHandler handler, CancellationToken ct)
-        => Ok(await handler.HandleAsync(from, to, ct));
+        [FromQuery] DateOnly? from, [FromQuery] DateOnly? to, CancellationToken ct)
+        => Ok(await this._getDailyReportHandler.HandleAsync(from, to, ct));
 }
