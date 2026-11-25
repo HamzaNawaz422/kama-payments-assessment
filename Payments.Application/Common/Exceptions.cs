@@ -7,3 +7,5 @@ public sealed class ConflictException(string message) : Exception(message);     
 public sealed class ValidationException(string message) : Exception(message);      // → 400
 
 public sealed class ConcurrencyException(string message) : Exception(message);     // → 409 / skipped in background
+
+public sealed class DuplicateKeyException(string message) : Exception(message);   // unique index violation
