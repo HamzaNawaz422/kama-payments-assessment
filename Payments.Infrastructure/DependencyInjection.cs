@@ -10,6 +10,7 @@ using Payments.Infrastructure.Persistence.Repositories;
 using Microsoft.Extensions.Http.Resilience;
 using Payments.Infrastructure.ExternalServices;
 using Polly;
+using Payments.Infrastructure.BackgroundJobs;
 
 namespace Payments.Infrastructure;
 
@@ -43,6 +44,14 @@ public static class DependencyInjection
                 options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(providerOptions.AttemptTimeoutSeconds);
                 options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(providerOptions.TotalTimeoutSeconds);
             });
+
+        var jobOptions = configuration.GetSection(BackgroundJobOptions.SectionName).Get<BackgroundJobOptions>()
+                 ?? new BackgroundJobOptions();
+        services.AddSingleton(jobOptions);
+
+        services.AddSingleton<IPaymentQueue, ChannelPaymentQueue>();
+        services.AddHostedService<PaymentProcessingWorker>();
+        services.AddHostedService<FailedPaymentRetryWorker>();
 
         return services;
     }
