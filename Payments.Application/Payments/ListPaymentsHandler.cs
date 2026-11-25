@@ -11,7 +11,7 @@ public sealed class ListPaymentsHandler(IPaymentQueries queries, ICurrentUser cu
     public Task<PagedResult<PaymentSummaryDto>> HandleAsync(
         Guid? userIdFilter, PaymentStatus? status, int page, int pageSize, CancellationToken ct)
     {
-        // Users only ever see their own payments; admins can see all or filter by user
+        
         var userId = currentUser.IsAdmin ? userIdFilter : currentUser.UserId;
 
         page = Math.Max(page, 1);

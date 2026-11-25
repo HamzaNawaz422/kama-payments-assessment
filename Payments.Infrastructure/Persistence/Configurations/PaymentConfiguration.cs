@@ -14,7 +14,6 @@ public sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
         builder.HasKey(p => p.Id);
         builder.Property(p => p.Id).ValueGeneratedNever();
 
-        // Money value object → Amount + Currency columns in the same table
         builder.ComplexProperty(p => p.Amount, money =>
         {
             money.Property(m => m.Amount).HasColumnName("Amount").HasPrecision(18, 2).IsRequired();
@@ -27,7 +26,6 @@ public sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
         builder.Property(p => p.ProviderReference).HasMaxLength(100);
         builder.Property(p => p.FailureReason).HasMaxLength(500);
 
-        // Optimistic concurrency: stops two workers processing the same payment
         builder.Property<byte[]>("RowVersion").IsRowVersion();
 
         builder.HasOne<PaymentProvider>()
@@ -47,7 +45,6 @@ public sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
         builder.Ignore(p => p.DomainEvents);
         builder.Ignore(p => p.CanBeAutoRetried);
 
-        // Indexes for the main query paths
         builder.HasIndex(p => new { p.UserId, p.IdempotencyKey })
             .IsUnique()
             .HasDatabaseName("UX_Payments_UserId_IdempotencyKey");

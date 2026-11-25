@@ -8,12 +8,10 @@ using Payments.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Layers
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApiSecurity(builder.Configuration);
 
-// API
 builder.Services.AddControllers()
     .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
@@ -28,7 +26,7 @@ builder.Services.AddOpenApi(options => options.AddDocumentTransformer<BearerSecu
 var app = builder.Build();
 
 app.UseExceptionHandler();
-app.UseStatusCodePages();   // 401/403 responses also become ProblemDetails
+app.UseStatusCodePages();   
 
 if (app.Environment.IsDevelopment())
 {
@@ -45,7 +43,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-// Applies migrations (development only) and seeds the test users
+
 await DatabaseInitializer.InitializeAsync(app.Services, applyMigrations: app.Environment.IsDevelopment());
 
 app.Run();

@@ -4,7 +4,7 @@ using Payments.Domain.PaymentAggregate;
 
 namespace Payments.Application.Abstractions;
 
-/// <summary>Read-side queries (CQRS): fast, no tracking, return DTOs directly.</summary>
+
 public interface IPaymentQueries
 {
     Task<PaymentDetailsDto?> GetByIdAsync(Guid id, CancellationToken ct);

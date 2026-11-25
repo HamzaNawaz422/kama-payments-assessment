@@ -2,9 +2,7 @@
 
 namespace Payments.Domain.ProviderAggregate;
 
-/// <summary>
-/// Aggregate root for a payment provider configured by admins.
-/// </summary>
+
 public sealed class PaymentProvider : AggregateRoot
 {
     public string Name { get; private set; } = default!;
@@ -12,7 +10,7 @@ public sealed class PaymentProvider : AggregateRoot
     public bool IsActive { get; private set; }
     public DateTime CreatedAtUtc { get; private set; }
 
-    private PaymentProvider() { } // for EF Core
+    private PaymentProvider() { } 
 
     public static PaymentProvider Create(string name, string code)
     {

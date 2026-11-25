@@ -9,7 +9,7 @@ public sealed class GetPaymentHandler(IPaymentQueries queries, ICurrentUser curr
     {
         var payment = await queries.GetByIdAsync(id, ct);
 
-        // Another user's payment returns 404 (not 403), so we don't even reveal that it exists
+        
         if (payment is null || (!currentUser.IsAdmin && payment.UserId != currentUser.UserId))
             throw new NotFoundException("Payment not found.");
 

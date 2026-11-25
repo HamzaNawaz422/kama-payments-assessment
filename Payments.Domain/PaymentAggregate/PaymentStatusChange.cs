@@ -2,9 +2,7 @@
 
 namespace Payments.Domain.PaymentAggregate;
 
-/// <summary>
-/// Audit record of every status transition. Owned by the Payment aggregate; append-only.
-/// </summary>
+
 public sealed class PaymentStatusChange : Entity
 {
     public PaymentStatus? FromStatus { get; private set; }
@@ -13,7 +11,7 @@ public sealed class PaymentStatusChange : Entity
     public string? Note { get; private set; }
     public DateTime ChangedAtUtc { get; private set; }
 
-    private PaymentStatusChange() { } // for EF Core
+    private PaymentStatusChange() { } 
 
     internal PaymentStatusChange(PaymentStatus? from, PaymentStatus to, string changedBy, string? note)
     {

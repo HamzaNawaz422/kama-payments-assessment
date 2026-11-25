@@ -2,7 +2,7 @@
 
 public interface IReportQueries
 {
-    /// <summary>Calls the SQL Server stored procedure sp_DailyPaymentReport.</summary>
+    
     Task<IReadOnlyList<DailyPaymentReportRow>> GetDailyPaymentReportAsync(
         DateOnly from, DateOnly to, CancellationToken ct);
 }

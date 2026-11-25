@@ -39,7 +39,6 @@ public sealed class GlobalExceptionHandler(
             {
                 Status = status,
                 Title = title,
-                // Never leak internal error details for 500s
                 Detail = status == StatusCodes.Status500InternalServerError ? "Please try again later." : exception.Message,
                 Instance = httpContext.Request.Path
             }

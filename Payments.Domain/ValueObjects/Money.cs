@@ -2,10 +2,7 @@
 
 namespace Payments.Domain.ValueObjects;
 
-/// <summary>
-/// Value object: an amount with its currency. Immutable, no identity, validated on creation.
-/// Stored as decimal (never float/double).
-/// </summary>
+
 public sealed record Money
 {
     private static readonly HashSet<string> SupportedCurrencies =
@@ -14,7 +11,7 @@ public sealed record Money
     public decimal Amount { get; private init; }
     public string Currency { get; private init; } = default!;
 
-    private Money() { } // for EF Core
+    private Money() { } 
 
     private Money(decimal amount, string currency)
     {

@@ -1,6 +1,6 @@
 ﻿namespace Payments.Domain.PaymentAggregate;
 
-/// <summary>Write-side repository for the Payment aggregate (one repository per aggregate root).</summary>
+
 public interface IPaymentRepository
 {
     Task<Payment?> GetByIdAsync(Guid id, CancellationToken ct);

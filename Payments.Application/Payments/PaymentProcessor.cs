@@ -22,7 +22,6 @@ public sealed class PaymentProcessor(
             return;
         }
 
-        // Idempotent: already done, already being processed, or no attempts left → nothing to do
         if (payment.Status is PaymentStatus.Completed or PaymentStatus.Processing ||
             (payment.Status == PaymentStatus.Failed && !payment.CanBeAutoRetried))
         {
@@ -30,7 +29,6 @@ public sealed class PaymentProcessor(
             return;
         }
 
-        // Claim it: RowVersion makes sure only one worker can move it to Processing
         payment.StartProcessing();
         try
         {
@@ -53,7 +51,6 @@ public sealed class PaymentProcessor(
         }
         catch (Exception ex) when (!ct.IsCancellationRequested)
         {
-            // Retries/backoff already happened inside the HttpClient pipeline; this is the final failure
             logger.LogWarning(ex, "Provider call failed for payment {PaymentId}", paymentId);
             result = new ProviderChargeResult(false, null, "Payment provider unavailable");
         }

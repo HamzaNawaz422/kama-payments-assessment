@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
-// Remembers results by idempotency key, so a repeated call never charges twice
+
 var processed = new ConcurrentDictionary<Guid, ChargeResponse>();
 
 app.MapPost("/api/charges", async (ChargeRequest request, HttpRequest http, ILogger<Program> logger, CancellationToken ct) =>
@@ -16,19 +16,18 @@ app.MapPost("/api/charges", async (ChargeRequest request, HttpRequest http, ILog
         return Results.Ok(previous);
     }
 
-    await Task.Delay(Random.Shared.Next(200, 1200), ct);   // simulate network latency
+    await Task.Delay(Random.Shared.Next(200, 1200), ct);   
 
-    // Fixed test amounts, so reviewers can trigger each scenario on purpose
     if (request.Amount == 503m)
-        return Results.StatusCode(StatusCodes.Status503ServiceUnavailable);   // always a transient error
+        return Results.StatusCode(StatusCodes.Status503ServiceUnavailable);   
 
     if (request.Amount == 408m)
-        await Task.Delay(TimeSpan.FromSeconds(30), ct);                        // always times out
+        await Task.Delay(TimeSpan.FromSeconds(30), ct);                       
 
     var roll = Random.Shared.Next(100);
 
     if (roll < 20)
-        return Results.StatusCode(StatusCodes.Status503ServiceUnavailable);   // random transient error (not stored)
+        return Results.StatusCode(StatusCodes.Status503ServiceUnavailable);   
 
     var response = request.Amount > 10_000m
         ? new ChargeResponse("Declined", null, "Amount exceeds provider limit")

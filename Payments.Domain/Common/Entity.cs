@@ -1,8 +1,6 @@
 ﻿namespace Payments.Domain.Common;
 
-/// <summary>
-/// Base for all entities: identity + equality by Id.
-/// </summary>
+
 public abstract class Entity
 {
     public Guid Id { get; protected set; } = Guid.NewGuid();

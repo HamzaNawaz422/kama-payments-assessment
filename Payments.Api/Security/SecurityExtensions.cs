@@ -18,7 +18,7 @@ public static class SecurityExtensions
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
-                options.MapInboundClaims = false;   // keep claim names as issued ("sub", "role", "permission")
+                options.MapInboundClaims = false;   
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -34,7 +34,7 @@ public static class SecurityExtensions
                 };
             });
 
-        // One policy per permission: [Authorize(Policy = Permissions.PaymentsCreate)]
+        
         services.AddAuthorization(options =>
         {
             foreach (var permission in Permissions.All)

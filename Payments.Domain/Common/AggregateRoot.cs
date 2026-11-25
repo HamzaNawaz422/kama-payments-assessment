@@ -1,8 +1,6 @@
 ﻿namespace Payments.Domain.Common;
 
-/// <summary>
-/// Base for aggregate roots: entity + domain events.
-/// </summary>
+
 public abstract class AggregateRoot : Entity
 {
     private readonly List<IDomainEvent> _domainEvents = new();

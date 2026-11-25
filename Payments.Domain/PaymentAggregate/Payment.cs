@@ -3,10 +3,7 @@ using Payments.Domain.ValueObjects;
 
 namespace Payments.Domain.PaymentAggregate;
 
-/// <summary>
-/// Aggregate root. All state changes go through its methods, which enforce the business rules
-/// and record an audit entry for every status transition.
-/// </summary>
+
 public sealed class Payment : AggregateRoot
 {
     public const int MaxAutomaticAttempts = 3;
@@ -15,11 +12,11 @@ public sealed class Payment : AggregateRoot
     private readonly List<PaymentStatusChange> _statusHistory = new();
 
     public Guid UserId { get; private set; }
-    public Guid ProviderId { get; private set; }                 // other aggregate referenced by ID only
-    public Money Amount { get; private set; } = default!;         // value object
+    public Guid ProviderId { get; private set; }                 
+    public Money Amount { get; private set; } = default!;         
     public PaymentStatus Status { get; private set; }
     public string IdempotencyKey { get; private set; } = default!;
-    public string RequestHash { get; private set; } = default!;   // detects "same key, different body"
+    public string RequestHash { get; private set; } = default!;   
     public int AttemptCount { get; private set; }
     public string? ProviderReference { get; private set; }
     public string? FailureReason { get; private set; }
@@ -31,10 +28,9 @@ public sealed class Payment : AggregateRoot
     public bool CanBeAutoRetried =>
         Status == PaymentStatus.Failed && AttemptCount < MaxAutomaticAttempts;
 
-    private Payment() { } // for EF Core
+    private Payment() { } 
 
-    // ---------- Factory ----------
-
+    
     public static Payment Create(
         Guid userId, Guid providerId, Money amount, string idempotencyKey, string requestHash)
     {
@@ -53,7 +49,7 @@ public sealed class Payment : AggregateRoot
             UserId = userId,
             ProviderId = providerId,
             Amount = amount,
-            Status = PaymentStatus.Pending,              // always starts as Pending
+            Status = PaymentStatus.Pending,              
             IdempotencyKey = idempotencyKey.Trim(),
             RequestHash = requestHash,
             CreatedAtUtc = now,
@@ -66,8 +62,7 @@ public sealed class Payment : AggregateRoot
         return payment;
     }
 
-    // ---------- Behaviour (business rules live here) ----------
-
+    
     public void StartProcessing()
     {
         if (Status is not (PaymentStatus.Pending or PaymentStatus.Failed))
@@ -103,7 +98,6 @@ public sealed class Payment : AggregateRoot
         AddDomainEvent(new PaymentFailed(Id, AttemptCount, FailureReason, DateTime.UtcNow));
     }
 
-    /// <summary>Used on startup: processing was interrupted (e.g. app restart) → put back in the queue.</summary>
     public void RequeueAfterInterruption()
     {
         if (Status != PaymentStatus.Processing)
@@ -112,7 +106,6 @@ public sealed class Payment : AggregateRoot
         ChangeStatus(PaymentStatus.Pending, SystemActor, "Re-queued after interrupted processing");
     }
 
-    /// <summary>Admin-only manual retry of a failed payment. Resets the automatic attempt counter.</summary>
     public void RetryManually(Guid adminUserId)
     {
         if (Status != PaymentStatus.Failed)
@@ -123,7 +116,6 @@ public sealed class Payment : AggregateRoot
         ChangeStatus(PaymentStatus.Pending, adminUserId.ToString(), "Manual retry by admin");
     }
 
-    // ---------- Helpers ----------
 
     private void ChangeStatus(PaymentStatus newStatus, string changedBy, string? note)
     {

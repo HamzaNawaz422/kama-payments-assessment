@@ -22,7 +22,7 @@ public sealed class RetryPaymentHandler(
         }
         catch (DomainException ex)
         {
-            throw new ConflictException(ex.Message);   // e.g. payment is not Failed → 409
+            throw new ConflictException(ex.Message);   
         }
 
         await unitOfWork.SaveChangesAsync(ct);

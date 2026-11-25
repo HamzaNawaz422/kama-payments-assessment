@@ -32,7 +32,7 @@ public sealed class CreatePaymentHandler(
 
         var requestHash = ComputeRequestHash(request);
 
-        // Same key already used by this user → replay or conflict
+        
         var existing = await payments.GetByIdempotencyKeyAsync(currentUser.UserId, idempotencyKey, ct);
         if (existing is not null)
         {
@@ -65,11 +65,11 @@ public sealed class CreatePaymentHandler(
         }
         catch (DuplicateKeyException)
         {
-            // Two parallel requests with the same key: the unique index let only one win
+            
             throw new ConflictException("A request with this Idempotency-Key is already in progress. Retry shortly.");
         }
 
-        // Committed first, then signal the background worker
+        
         await queue.EnqueueAsync(payment.Id, ct);
 
         var created = await queries.GetByIdAsync(payment.Id, ct)
